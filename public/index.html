@@ -55,7 +55,7 @@
       var PathContainer = React.createClass({
         selectedData: null,
         getInitialState: function() {
-          return {offDef: 'offense', gridSel: []}
+          return {offDef: 'offense', gridSel: [], playerSelectActive: false}
         },
         getNumPossessions: function() {
           return 12; // TODO
@@ -75,7 +75,7 @@
                 onPlayerChange={this.props.onPlayerChange}
                 offDef={this.props.offDef}
               />
-              <CourtContainer />
+              {(this.state.playerSelectActive) ? <h1>PlayerSelect</h1> : <CourtContainer />}
               <StatsContainer
                 numPossessions={this.getNumPossessions()}
                 fGPercent={this.getFGPercent()}

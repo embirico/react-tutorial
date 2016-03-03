@@ -1,0 +1,15 @@
+content
+  nav
+  PathContainer
+    Header
+      ChangePlayerButton
+      PlayerName
+      OffDefToggle
+    CourtContainer
+      Canvas
+      ClickGrid
+      PlayerSelect
+    StatsContainer
+      PossessionsCount
+      PossessionsFG
+      Histogam

@@ -12,7 +12,7 @@
 
 var Comment = React.createClass({
   rawMarkup: function() {
-    var rawMarkup = marked(this.props.children.toString(), {sanitize: true});
+    var rawMarkup = this.props.children.toString();
     return { __html: rawMarkup };
   },
 

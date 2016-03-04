@@ -4,7 +4,9 @@
     <meta charset="utf-8">
     <title>Gabe</title>
     <!-- Not present in the tutorial. Just for basic styling. -->
+    <link rel="stylesheet" href="css/bootstrap.3.3.6.min.css" />
     <link rel="stylesheet" href="css/base.css" />
+    <link rel="stylesheet" href="css/main.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.7/react.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.7/react-dom.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.6.15/browser.js"></script>
@@ -18,7 +20,15 @@
       var Nav = React.createClass({
         render: function() {
           return (
-            <div className="row"><span>Path Explorer</span></div>
+            <nav className='navbar navbar-default'>
+              <div className='container'>
+                <div className='navbar-header navbar-center'>
+                  <p className='navbar-text'>
+                    Path Explorer
+                  </p>
+                </div>
+              </div>
+            </nav>
           );
         }
       });
@@ -36,16 +46,16 @@
         componentDidMount: function() {
           this.setState({player: 'Stephen Curry'});
         },
-        handlePlayerChange: function(player) {
+        triggerPlayerChange: function(player) {
           this.setState({player: player});
         },
         render: function() {
           return (
-            <div className="playerContainer">
+            <div className="playerContainer container">
               <PathContainer
                 player={this.state.player}
                 allData={this.getAllData}
-                onPlayerChange={this.handlePlayerChange}
+                triggerPlayerChange={this.triggerPlayerChange}
               />
             </div>
           )
@@ -55,7 +65,7 @@
       var PathContainer = React.createClass({
         selectedData: null,
         getInitialState: function() {
-          return {offDef: 'offense', gridSel: [], playerSelectActive: false}
+          return {offDef: 'off', gridSel: [], playerSelectActive: false}
         },
         getNumPossessions: function() {
           return 12; // TODO
@@ -66,16 +76,21 @@
         getHistogramData: function() {
           return 'histogram'; // TODO
         },
+        toggleOffDef: function() {
+          var newOffDef = this.state.offDef == 'off' ? 'def' : 'off';
+          // this.setState({offDef: newOffDef});
+        },
 
         render: function() {
           return (
-            <div className="pathContainer">
+            <div className="col-lg-8 col-lg-offset-2 pathContainer">
               <Header
+                triggerPlayerChange={this.props.triggerPlayerChange}
                 player={this.props.player}
-                onPlayerChange={this.props.onPlayerChange}
-                offDef={this.props.offDef}
+                offDef={this.state.offDef}
+                toggleOffDef={this.toggleOffDef()}
               />
-              {(this.state.playerSelectActive) ? <h1>PlayerSelect</h1> : <CourtContainer />}
+              {this.state.playerSelectActive ? <PlayerSelectContainer /> : <CourtContainer />}
               <StatsContainer
                 numPossessions={this.getNumPossessions()}
                 fGPercent={this.getFGPercent()}
@@ -89,31 +104,33 @@
       var Header = React.createClass({
         render: function() {
           return (
-            <div className="header">
-              <ChangePlayerButton onPlayerChange={this.props.onPlayerChange} />
-              <PlayerName player={this.props.player} />
-              <OffDefToggle offDef={this.props.offDef} />
+            <div className="header row">
+              <ChangePlayerBtn triggerPlayerChange={this.props.triggerPlayerChange} />
+              <TitlePlayerName player={this.props.player} />
+              <OffDefToggle offDef={this.props.offDef} toggleOffDef={this.props.toggleOffDef} />
             </div>
-          )
+          );
         }
       });
 
-      var ChangePlayerButton = React.createClass({
+      var ChangePlayerBtn = React.createClass({
         handleClick: function(e) {
           e.preventDefault();
-          this.props.onPlayerChange('Gabriel Poon');
+          this.props.triggerPlayerChange();
         },
         render: function() {
           return (
-            <a href="#" onClick={this.handleClick}>Change Player</a>
-          )
+            <div className='col-lg-2'>
+              <svg className='change-player-icon' onClick={this.handleClick}></svg>
+            </div>
+          );
         }
       });
 
-      var PlayerName = React.createClass({
+      var TitlePlayerName = React.createClass({
         render: function() {
           return (
-            <h1>{this.props.player}</h1>
+            <div className='col-lg-8 player-title'>{this.props.player}</div>
           )
         }
       });
@@ -121,40 +138,148 @@
       var OffDefToggle = React.createClass({
         render: function() {
           return (
-            <form>
-              <input
-                type="radio"
-                name="Offense"
-                value="offense"
-                checked={this.props.offDef == "offense"}
+            <div className='col-lg-2'>
+              <OffDefToggleBtn
+                selected={this.props.offDef == 'off'}
+                toggleOffDef={this.props.toggleOffDef}
               >
                 Offense
-              </input>
-              <input
-                type="radio"
-                name="Defense"
-                value="defense"
-                checked={this.props.offDef == "defense"}
+              </OffDefToggleBtn>
+              <OffDefToggleBtn
+                selected={this.props.offDef == 'def'}
+                toggleOffDef={this.props.toggleOffDef}
               >
-                defense
-              </input>
-            </form>
-          )
+                Defense
+              </OffDefToggleBtn>
+            </div>
+          );
+        }
+      });
+
+      var OffDefToggleBtn = React.createClass({
+        getClassName: function() {
+          return this.props.selected ? 'offdef-tgl-btn tgl-selected' : 'offdef-tgl-btn';
+        },
+        handleClick: function(e) {
+          e.preventDefault();
+          this.props.toggleOffDef();
+        },
+        render: function() {
+          return (
+            <div className={this.getClassName()} onClick={this.handleClick}>
+              {this.props.children}
+            </div>
+          );
         }
       });
 
       var CourtContainer = React.createClass({
         render: function() {
           return (
-            <div></div>
+            <div className='court-container'>
+              <ClickGrid />
+              <Canvas />
+            </div>
           )
+        }
+      });
+
+      var ClickGrid = React.createClass({
+        render: function() {
+          return (
+            <svg className='court-grid'></svg>
+          );
+        }
+      });
+
+      var Canvas = React.createClass({
+        render: function() {
+          return (
+            <canvas className='court-canvas'></canvas>
+          );
+        }
+      });
+
+      var PlayerSelectContainer = React.createClass({
+        data: null,
+        getData: function() {
+
+        },
+        render: function() {
+          return (
+            <div>
+              <SearchBar />
+              <SelectionContainer data={this.data} />
+            </div>
+          );
+        }
+      });
+
+      var SearchBar = React.createClass({
+        // Stick Lunr here?
+        render: function() {
+          return (
+            <input type='text' value='Search'>
+            </input>
+          )
+        }
+      });
+
+      var SelectionContainer = React.createClass({
+        render: function() {
+          const Teams = this.props.data.map(function(obj) {
+            var teamName = obj.teamName;
+            var players = obj.players;
+            return <TeamContainer teamName={teamName} players={players} />
+          });
+
+          return (
+            <div class='selection-container'>
+              {Teams}
+            </div>
+          );
+        }
+      });
+
+      var TeamContainer = React.createClass({
+        render: function() {
+          const PlayerNames = this.props.players.map(function(name, i) {
+            return <SelectPlayerName name={name} key={i} />
+          });
+
+          return (
+            <div>
+              <TeamIcon teamName={this.props.teamName} />
+              {PlayerNames}
+            </div>
+          );
+        }
+      })
+
+      var TeamIcon = React.createClass({
+        render: function() {
+          return (
+            <div>
+              <span className='team-name'>{this.props.teamName}</span>
+            </div>
+          );
+        }
+      });
+
+      var SelectPlayerName = React.createClass({
+        render: function() {
+          return (
+            <div className='select-player-name'>
+              {this.props.name}
+            </div>
+          );
         }
       });
 
       var StatsContainer = React.createClass({
         render: function() {
           return (
-            <div className="statsContainer">
+            <div className="row stats-container">
               <PossessionsCount count={this.props.numPossessions} />
               <PossessionsFG percent={this.props.fGPercent} />
               <Histogram data={this.props.histogramData} />
@@ -166,7 +291,7 @@
       var PossessionsCount = React.createClass({
         render: function() {
           return (
-            <div className="possessionsCount">
+            <div className="col-lg-3 stats-poss">
               <h2>{this.props.count}</h2>
               <p>Num possessions</p>
             </div>
@@ -177,7 +302,7 @@
       var PossessionsFG = React.createClass({
         render: function() {
           return (
-            <div className="possessionsFG">
+            <div className="col-lg-3 stats-poss">
               <h2>{this.props.percent}</h2>
               <p>Percent of field goals made</p>
             </div>
@@ -188,9 +313,8 @@
       var Histogram = React.createClass({
         render: function() {
           return (
-            <div className="histogram">
+            <div className="col-lg-6">
               <h2>Histogram</h2>
-              <p>TODO</p>
             </div>
           )
         }

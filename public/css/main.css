@@ -1,0 +1,60 @@
+body {
+	padding: 0;
+}
+
+.navbar {
+	border: none;
+}
+
+.nav-brand {
+  float: none;
+}
+
+.navbar-center {
+  width: 100%;
+  text-align: center;
+}
+
+.navbar-text {
+  float: none;
+}
+
+.player-title {
+	text-align: center;
+}
+
+.offdef-tgl-btn {
+	padding: 5px 15px 5px 10px;
+	text-align: center;
+}
+
+.offdef-tgl-btn:hover {
+	cursor: pointer;
+	background-color: #C0C0C0;
+	color: white;
+}
+
+.offdef-tgl-btn.tgl-selected {
+	background-color: black;
+	color: white;
+}
+
+.offdef-tgl-btn.tgl-selected:hover {
+	cursor: default;
+}
+
+.court-container {
+	position: relative;
+}
+
+.court-canvas {
+	background: url('../imgs/fullcourt.svg');
+	background-size: 100% 100%;
+	background-repeat: no-repeat;
+	background-color: black;
+}
+
+.court-grid {
+	position: absolute;
+	z-index: 10;
+}
